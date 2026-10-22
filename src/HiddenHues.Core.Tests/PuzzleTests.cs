@@ -70,6 +70,34 @@ public class PuzzleTests
         Assert.True(Solver.Replay(level.Width, level.Height, level.Target, puzzle!.Occupants, 30, puzzle.Solution));
     }
 
+    [Theory]
+    [InlineData(32, 12, 30)]
+    [InlineData(32, 12, 10)]
+    [InlineData(24, 8, 10)]
+    public void Generate_LargestGrids_FinishQuickly(int longSide, int colors, int capacity)
+    {
+        // A busy picture: diagonal bands crossed with rings, so every color appears in many places.
+        var rgba = new byte[256 * 256 * 4];
+        for (var y = 0; y < 256; y++)
+        for (var x = 0; x < 256; x++)
+        {
+            var i = (y * 256 + x) * 4;
+            var ring = (int)Math.Sqrt((x - 128) * (x - 128) + (y - 128) * (y - 128)) / 20;
+            (rgba[i], rgba[i + 1], rgba[i + 2], rgba[i + 3]) =
+                ((byte)((x + y) / 2), (byte)(ring * 40 % 256), (byte)(255 - x), 255);
+        }
+
+        var level = PictureReducer.Reduce(new PixelImage(256, 256, rgba), new ReduceOptions { LongSide = longSide, Colors = colors });
+        var timer = Stopwatch.StartNew();
+
+        var puzzle = Puzzle.Generate(level, ShuffleStyle.Clumps, capacity);
+
+        _output.WriteLine($"{level.Width}x{level.Height}, {level.Palette.Count} colors, capacity {capacity}: " +
+                          $"{timer.ElapsedMilliseconds} ms, solved={puzzle is not null}, seed {puzzle?.Seed}");
+        // Within the default time limit, plus a little for the node in progress when time runs out.
+        Assert.True(timer.Elapsed < Puzzle.DefaultTimeLimit + TimeSpan.FromSeconds(1), $"took {timer.ElapsedMilliseconds} ms");
+    }
+
     private static double AverageRegionSize(int[] grid, int width, int height)
     {
         var visited = new bool[grid.Length];
