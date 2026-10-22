@@ -7,7 +7,7 @@ using HiddenHues.Core.Generation;
 namespace HiddenHues;
 
 /// <summary>
-/// Draws the current puzzle and drives the Core simulation: one tick per second at 1x speed,
+/// Draws the current puzzle and drives the Core simulation: four ticks per second at 1x speed,
 /// with belt pixels sliding smoothly between tiles. The board scales to fit the window.
 /// </summary>
 public partial class BoardView : Node2D
@@ -18,6 +18,7 @@ public partial class BoardView : Node2D
     private const float FeederHeight = 44f;
     private const float HudHeight = 70f;
     private const float Margin = 16f;
+    private const double TilesPerSecondAt1x = 4;
     private static readonly int[] Speeds = { 1, 2, 4 };
 
     private static readonly Color Background = Color.Color8(0xE6, 0xE8, 0xF2);
@@ -65,7 +66,7 @@ public partial class BoardView : Node2D
 
     public override void _Process(double delta)
     {
-        _sinceTick += delta * Speeds[_speedIndex];
+        _sinceTick += delta * TilesPerSecondAt1x * Speeds[_speedIndex];
         while (_sinceTick >= 1.0)
         {
             _sinceTick -= 1.0;

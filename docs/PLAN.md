@@ -35,7 +35,7 @@ Each phase ends with something playable.
 
 **Movement**
 - Each tick, the belt advances one tile.
-- **Speeds:** 1×, 2× and 4×. At 1× a tick is 1 second (one tile per second), so 2× is one tile every 0.5 s and 4× one every 0.25 s. This is a starting value that's easy to tune later.
+- **Speeds:** 1×, 2× and 4×. At 1× the belt moves 4 tiles per second, so 2× is 8 and 4× is 16. The first version ran 1× at one tile per second, which was too slow.
 - The feeder releases one pixel onto its entry tile whenever that tile is free.
 
 **Placement**
