@@ -8,4 +8,8 @@
     <RootNamespace>HiddenHues.Core</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="HiddenHues.Core.Tests" />
+  </ItemGroup>
+
 </Project>
