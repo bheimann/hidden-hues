@@ -125,15 +125,20 @@ Done when: you can play the level to a win, deliberately overfill the belt to lo
   - It's free with an API key and has a `safesearch=true` filter.
   - It also has `image_type=illustration` or `vector`. Flat illustrations reduce to a few colors much better than photos.
   - Combine those with kid-friendly categories such as animals, food and nature.
-  - Check their current terms. Last I knew they asked apps to say images come from Pixabay and limited how long results can be cached.
+  - Their terms (checked 2026-10-22) say:
+    - Show users where the pictures come from.
+    - Cache searches for 24 hours.
+    - Download pictures rather than linking to them.
+    - Make no more than 100 requests per minute, and don't mass-download.
 - **Alternatives:**
   - Openverse has a filter that leaves out mature content.
   - Lorem Picsum needs no key but has no safety filter, so I don't recommend it on its own.
 - **Safety:**
-  - No filter is perfect, so show the reduced preview before play. Optionally, add a "parent approves" step, or only use pictures someone has already approved and cached.
-  - Bundle a few local pictures as an offline fallback.
+  - Safe search is always on, and a tag blocklist backs it up.
+  - No filter is perfect, so the original and the reduced picture are shown before play. "Not this one" hides a picture for good.
+  - Offline, the game falls back to the built-in sample level. It doesn't bundle Pixabay pictures, because shipping them unaltered would redistribute them.
 - **API key:** store it in a user settings file that's never committed.
-- **Downloads:** use Godot's `HTTPRequest`. A medium-size image (around 640 px) is plenty, because it gets reduced to about 20 cells across.
+- **Downloads:** .NET's `HttpClient`, in Core so it can be tested. The 640 px version of each picture is plenty, because it gets reduced to about 20 cells across. Pictures are kept in `user://cache/pixabay`.
 
 ## Later
 

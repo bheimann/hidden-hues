@@ -16,7 +16,8 @@ public partial class BoardView : Node2D
     private const float Gap = 14f;
     private const float HintWidth = 5f;
     private const float FeederHeight = 44f;
-    private const float HudHeight = 70f;
+    // The HUD gets an extra line for the picture credit when there is one.
+    private static float HudHeight => Session.Credit is null ? 70f : 96f;
     private const float Margin = 16f;
     private const double TilesPerSecondAt1x = 4;
     private static readonly int[] Speeds = { 1, 2, 4 };
@@ -165,6 +166,18 @@ public partial class BoardView : Node2D
         _message = new Label();
         _message.AddThemeColorOverride("font_color", Track);
         column.AddChild(_message);
+
+        // Pixabay asks that its pictures are credited wherever they're shown.
+        if (Session.Credit is { } credit)
+        {
+            var link = new LinkButton { Text = credit };
+            link.Pressed += () =>
+            {
+                if (Session.CreditUrl is { } url)
+                    OS.ShellOpen(url);
+            };
+            column.AddChild(link);
+        }
     }
 
     private async void NewShuffle()

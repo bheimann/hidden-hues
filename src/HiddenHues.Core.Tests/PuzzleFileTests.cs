@@ -11,9 +11,10 @@ public class PuzzleFileTests
         var original = Puzzle.Generate(PrototypeLevel.Create(), ShuffleStyle.Clumps, capacity: 30, seed: 4)!;
 
         var json = PuzzleFile.ToJson(original, "Prototype");
-        var (loaded, name) = PuzzleFile.FromJson(json);
+        var (loaded, name, credit, _) = PuzzleFile.FromJson(json);
 
         Assert.Equal("Prototype", name);
+        Assert.Null(credit);
         Assert.Equal(original.Level.Width, loaded.Level.Width);
         Assert.Equal(original.Level.Height, loaded.Level.Height);
         Assert.Equal(original.Level.Palette, loaded.Level.Palette);
@@ -22,6 +23,18 @@ public class PuzzleFileTests
         Assert.Equal(original.Capacity, loaded.Capacity);
         Assert.Equal(original.Seed, loaded.Seed);
         Assert.Equal(original.Solution, loaded.Solution);
+    }
+
+    [Fact]
+    public void Credit_IsKeptWithTheLevel()
+    {
+        var puzzle = Puzzle.Generate(PrototypeLevel.Create(), ShuffleStyle.Clumps, seed: 4)!;
+
+        var json = PuzzleFile.ToJson(puzzle, "Owl", "Picture by someone on Pixabay", "https://pixabay.com/x/");
+        var saved = PuzzleFile.FromJson(json);
+
+        Assert.Equal("Picture by someone on Pixabay", saved.Credit);
+        Assert.Equal("https://pixabay.com/x/", saved.CreditUrl);
     }
 
     [Fact]
