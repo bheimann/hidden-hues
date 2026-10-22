@@ -7,6 +7,8 @@ namespace HiddenHues.Core.Generation;
 /// Saves and loads puzzles as JSON. Grids are stored as rows of base-36 digits (one per cell),
 /// so a saved level is readable and small.
 /// </summary>
+public sealed record SavedPuzzle(Puzzle Puzzle, string Name, string? Credit = null, string? CreditUrl = null);
+
 public static class PuzzleFile
 {
     public const int CurrentVersion = 1;
@@ -15,9 +17,11 @@ public static class PuzzleFile
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public static string ToJson(Puzzle puzzle, string name)
+    /// <summary>The credit is kept with the level so the picture's author is still shown when it's replayed.</summary>
+    public static string ToJson(Puzzle puzzle, string name, string? credit = null, string? creditUrl = null)
     {
         var level = puzzle.Level;
         if (level.Palette.Count > 36)
@@ -27,6 +31,8 @@ public static class PuzzleFile
         {
             Version = CurrentVersion,
             Name = name,
+            Credit = credit,
+            CreditUrl = creditUrl,
             Width = level.Width,
             Height = level.Height,
             Palette = level.Palette.Select(c => $"#{c.R:X2}{c.G:X2}{c.B:X2}").ToList(),
@@ -39,7 +45,7 @@ public static class PuzzleFile
         return JsonSerializer.Serialize(dto, Json);
     }
 
-    public static (Puzzle Puzzle, string Name) FromJson(string json)
+    public static SavedPuzzle FromJson(string json)
     {
         var dto = JsonSerializer.Deserialize<Dto>(json, Json)
                   ?? throw new FormatException("The level file is empty.");
@@ -54,7 +60,8 @@ public static class PuzzleFile
 
         var level = new Level(dto.Width, dto.Height, palette, target);
         var solution = dto.Solution.Select(p => new GridPos(p[0], p[1])).ToList();
-        return (new Puzzle(level, occupants, dto.Capacity, dto.Seed, solution), dto.Name);
+        return new SavedPuzzle(new Puzzle(level, occupants, dto.Capacity, dto.Seed, solution), dto.Name,
+            dto.Credit, dto.CreditUrl);
     }
 
     private static List<string> ToRows(int[] grid, int width) =>
@@ -80,6 +87,8 @@ public static class PuzzleFile
     {
         public int Version { get; set; }
         public string Name { get; set; } = "";
+        public string? Credit { get; set; }
+        public string? CreditUrl { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public List<string> Palette { get; set; } = new();
