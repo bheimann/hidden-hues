@@ -19,7 +19,10 @@ The core skill is choosing which region to pick next. A big region is safe when 
 
 ## Running it
 
-- **Play:** open `game/project.godot` in Godot 4.7 (.NET build) and press Play.
+- **Play:** open `game/project.godot` in Godot 4.7 (.NET build) and press Play. The game opens on the generator screen:
+  - Choose a picture, then set the grid size, the number of colors and the capacity.
+  - Press Play, or use Play sample for the built-in level.
+  - Generated levels are saved to Godot's `user://levels` folder, and Open saved level loads them again.
 - **Tests:** run `dotnet test` from the repo root. They cover the game rules in `src/HiddenHues.Core`.
 
 See [docs/PLAN.md](docs/PLAN.md) for the build plan.

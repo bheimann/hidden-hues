@@ -13,10 +13,11 @@ public static class Solver
 {
     private const int MaxSettleTicks = 100_000;
 
+    /// <summary>Returns the clicks that win, or null if none were found within the node budget or before cancellation.</summary>
     public static IReadOnlyList<GridPos>? Solve(int width, int height, int[] target, int[] occupants, int capacity,
-        int nodeBudget = 20_000)
+        int nodeBudget = 5_000, CancellationToken cancel = default)
     {
-        var search = new Search(width, height, target, capacity, nodeBudget);
+        var search = new Search(width, height, target, capacity, nodeBudget, cancel);
         var start = new State((int[])occupants.Clone(), new int[target.Max() + 1], 0);
         var path = new List<GridPos>();
         return search.Run(start, path) ? path : null;
@@ -58,23 +59,28 @@ public static class Solver
         private readonly int[] _target;
         private readonly int _capacity;
         private readonly int _budget;
+        private readonly CancellationToken _cancel;
         private readonly HashSet<ulong> _seen = new();
         private int _nodes;
 
-        public Search(int width, int height, int[] target, int capacity, int budget)
+        public Search(int width, int height, int[] target, int capacity, int budget, CancellationToken cancel)
         {
             _width = width;
             _height = height;
             _target = target;
             _capacity = capacity;
             _budget = budget;
+            _cancel = cancel;
         }
+
+        private bool OutOfTime => _nodes > _budget || _cancel.IsCancellationRequested;
 
         public bool Run(State state, List<GridPos> path)
         {
             if (IsSolved(state))
                 return true;
-            if (++_nodes > _budget || !_seen.Add(Hash(state)))
+            _nodes++;
+            if (OutOfTime || !_seen.Add(Hash(state)))
                 return false;
 
             var moves = new List<(GridPos Click, State Next, int Taken)>();
@@ -99,7 +105,7 @@ public static class Solver
                 if (Run(move.Next, path))
                     return true;
                 path.RemoveAt(path.Count - 1);
-                if (_nodes > _budget)
+                if (OutOfTime)
                     return false;
             }
 
