@@ -34,3 +34,8 @@ export/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# .NET build output
+bin/
+obj/
+TestResults/

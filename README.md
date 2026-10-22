@@ -16,3 +16,10 @@ It's inspired by the iOS game "Brick Factory," but without the pay-to-progress w
 - **No help tools:** there are no boosters, extra slots or undo. Every level has to be solvable through planning alone.
 
 The core skill is choosing which region to pick next. A big region is safe when its matching slots are already exposed, and risky when its pixels will have to circle the belt waiting for a home.
+
+## Running it
+
+- **Play:** open `game/project.godot` in Godot 4.7 (.NET build) and press Play.
+- **Tests:** run `dotnet test` from the repo root. They cover the game rules in `src/HiddenHues.Core`.
+
+See [docs/PLAN.md](docs/PLAN.md) for the build plan.
